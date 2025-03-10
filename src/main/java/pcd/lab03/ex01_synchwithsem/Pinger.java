@@ -1,13 +1,26 @@
 package pcd.lab03.ex01_synchwithsem;
 
+import java.util.concurrent.Semaphore;
+
 public class Pinger extends ActiveComponent {
 
-	public Pinger() {
+	private Semaphore pingDone;
+	private Semaphore pongDone;
+
+	public Pinger(Semaphore pingDone, Semaphore pongDone) {
+		this.pingDone = pingDone;
+		this.pongDone = pongDone;
 	}	
 	
 	public void run() {
 		while (true) {
-			println("ping");
+			try {
+				pingDone.acquire();
+				println("ping");
+				pongDone.release();
+			} catch (InterruptedException ex) {
+				println("interrupted..");
+			}
 		}
 	}
 }
